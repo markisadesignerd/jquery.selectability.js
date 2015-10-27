@@ -56,11 +56,24 @@ function Selectability(element) {
 }
 
 Selectability.prototype.buildElements = function () {
+  this.wrap = $('<div></div>')
+      .addClass('selectability-wrap')
+      .attr({
+          tabindex: -1
+      });
+
   this.textbox = $('<div></div>')
     .attr({
       role: 'textbox',
       tabindex: -1,
       'aria-readonly': 'true'
+    });
+
+  this.icon = $('<i></i>')
+    .addClass('selectability-icon')
+    .attr({
+      role: 'presentation',
+      tabindex: -1
     });
 
   this.listbox = $('<div></div>')
@@ -78,8 +91,12 @@ Selectability.prototype.buildElements = function () {
       'aria-expanded': 'false'
     });
 
+    this.wrap
+        .append(this.textbox)
+        .append(this.icon);
+
   this.combobox
-    .append(this.textbox)
+    .append(this.wrap)
     .append(this.listbox);
 
   this.element
@@ -250,7 +267,7 @@ Selectability.prototype.listboxClick = function(event) {
 
   this.setActive($(event.target));
   this.closeCombobox();
-  
+
 
   event.preventDefault();
   return false;
@@ -273,7 +290,7 @@ Selectability.prototype.setActive = function(active) {
   // some frameworks read element.val() instead of the event value
   // so we populate the value and restore it (see below) if the event is canceled
   this.element.val(value);
-  
+
   try {
     // work around event handlers throwing exceptions
     this.element.trigger(event);
@@ -285,7 +302,7 @@ Selectability.prototype.setActive = function(active) {
     } else {
       // if the event is prevented, restore the old value
       this.element.val(prev);
-    } 
+    }
   }
 };
 
@@ -296,7 +313,7 @@ Selectability.prototype.listboxKeydown = function(event) {
       this.setActive($(event.target));
       this.closeCombobox();
       this.combobox.focus();
-      
+
       event.preventDefault();
       return false;
 
@@ -321,7 +338,7 @@ Selectability.prototype.toggleCombobox = function() {
     this.openCombobox();
 
     // We may have an empty select widget, so we can't always depend on
-    // `active' being defined  
+    // `active' being defined
     if (this.active) {
       this.active.focus();
     }
